@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>Cosmic Weather</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <canvas id="earth" aria-hidden="true"></canvas>
+    <div class="stars" aria-hidden="true"></div>
+    <div class="stars stars2" aria-hidden="true"></div>
+    <div class="stars stars3" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="brandText">
+          <div class="brandName">Cosmic Weather</div>
+          <div class="brandTag">Live sky conditions, space vibes.</div>
+        </div>
+      </div>
+
+      <div class="topActions">
+        <button id="locBtn" class="btn btnGhost" type="button" title="Refresh your location weather">
+          Use my location
+        </button>
+
+        <div class="audio">
+          <button id="audioToggle" class="btn btnGlow" type="button" aria-pressed="false">
+            BGM Off
+          </button>
+          <button id="audioConfig" class="btn btnGhost" type="button" title="Change background music URL">
+            Set BGM URL
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero floaty">
+        <div class="heroLeft">
+          <h1 class="title">Weather, but cinematic.</h1>
+          <p class="subtitle">
+            First: your current location. Then: search any city. Get humidity, rain windows, and a historical “highest
+            daily max temperature (last 30 years)” snapshot.
+          </p>
+        </div>
+
+        <form id="searchForm" class="search" autocomplete="off">
+          <div class="searchBox">
+            <input
+              id="cityInput"
+              type="text"
+              inputmode="search"
+              placeholder='search "city"'
+              aria-label="Search city"
+              required
+            />
+            <button class="btn btnPrimary" type="submit">Search</button>
+          </div>
+          <div id="suggestions" class="suggestions" role="listbox" aria-label="City suggestions"></div>
+          <div class="searchHint">
+            Tip: try <button class="chip" type="button" data-city="Chennai">Chennai</button>,
+            <button class="chip" type="button" data-city="Coimbatore">Coimbatore</button>,
+            <button class="chip" type="button" data-city="Bengaluru">Bengaluru</button>,
+            <button class="chip" type="button" data-city="London">London</button>.
+          </div>
+        </form>
+      </section>
+
+      <section class="grid">
+        <article class="card floaty" id="cardLocation">
+          <div class="cardHeader">
+            <div>
+              <div class="kicker">Your current location</div>
+              <div id="locTitle" class="cardTitle">Waiting for permission…</div>
+            </div>
+            <div id="locBadge" class="badge">LIVE</div>
+          </div>
+          <div id="locBody" class="cardBody skeleton">
+            <div class="bigStat"></div>
+            <div class="miniGrid">
+              <div class="mini"></div>
+              <div class="mini"></div>
+              <div class="mini"></div>
+              <div class="mini"></div>
+            </div>
+            <div class="divider"></div>
+            <div class="lines">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+            </div>
+          </div>
+          <div class="cardFooter">
+            <span id="locUpdated" class="muted">—</span>
+            <span class="muted">Source: Open‑Meteo</span>
+          </div>
+        </article>
+
+        <article class="card floaty" id="cardCity">
+          <div class="cardHeader">
+            <div>
+              <div class="kicker">Searched city</div>
+              <div id="cityTitle" class="cardTitle">Search a city to begin</div>
+            </div>
+            <div id="cityBadge" class="badge badgeDim">READY</div>
+          </div>
+          <div id="cityBody" class="cardBody emptyState">
+            <div class="emptyIcon" aria-hidden="true"></div>
+            <div class="emptyText">
+              <div class="emptyTitle">No city selected yet.</div>
+              <div class="muted">Use the search box above to fetch humidity, rain events, and historical highs.</div>
+            </div>
+          </div>
+          <div class="cardFooter">
+            <span id="cityUpdated" class="muted">—</span>
+            <span class="muted">Forecast + Archive: Open‑Meteo</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="note floaty">
+        <div class="noteTitle">About the BGM request</div>
+        <div class="noteBody">
+          This app includes a background audio player that can stream from a URL. For copyrighted tracks (like movie BGM),
+          you must use a source you have rights to. Use “Set BGM URL” to paste your link, or host an mp3 locally.
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span class="muted">Built with Open‑Meteo APIs and a WebGL Earth.</span>
+      </footer>
+    </main>
+
+    <dialog id="bgmDialog" class="dialog">
+      <form method="dialog" class="dialogInner">
+        <div class="dialogHeader">
+          <div class="dialogTitle">Background music URL</div>
+          <button class="iconBtn" value="cancel" aria-label="Close">✕</button>
+        </div>
+        <p class="muted">
+          Paste a direct audio URL (mp3/ogg). Use a link you have permission to stream.
+        </p>
+        <input id="bgmUrlInput" class="dialogInput" type="url" placeholder="https://example.com/song.mp3" />
+        <div class="dialogActions">
+          <button class="btn btnGhost" value="cancel" type="submit">Cancel</button>
+          <button id="saveBgm" class="btn btnPrimary" value="default" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
